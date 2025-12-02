@@ -22,7 +22,7 @@ int main()
         ll steps = total_steps % 100;
 
         if (line[0] == 'L') {
-            steps_thru_zero += (current_stop - steps) < 0;
+            steps_thru_zero += current_stop && (current_stop - steps) <= 0;
             current_stop = ((current_stop - steps) % 100 + 100) % 100;
         } else {
             steps_thru_zero += (current_stop + steps) > 99;
