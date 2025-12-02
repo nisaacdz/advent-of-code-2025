@@ -17,16 +17,17 @@ int main()
     while (std::getline(in, line))
     {
         ll total_steps = stoi(line.substr(1));
-        steps_thru_zero += total_steps / 100;
-
-        ll steps = total_steps % 100;
 
         if (line[0] == 'L') {
-            steps_thru_zero += (current_stop - steps) < 0;
-            current_stop = ((current_stop - steps) % 100 + 100) % 100;
+            for (int i = 0; i < total_steps; i++) {
+                current_stop = ((current_stop - 1) % 100 + 100) % 100;
+                steps_thru_zero += current_stop == 0;
+            }
         } else {
-            steps_thru_zero += (current_stop + steps) > 99;
-            current_stop = (current_stop + steps) % 100;
+            for (int i = 0; i < total_steps; i++) {
+                current_stop = (current_stop + 1) % 100;
+                steps_thru_zero += current_stop == 0;
+            }
         }
     }
     cout << steps_thru_zero << ENDL;
