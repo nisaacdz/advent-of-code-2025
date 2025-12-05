@@ -2,7 +2,4 @@
     "files.associations": {
         "iostream": "cpp"
     },
-    "rust-analyzer.linkedProjects": [
-        "day04-B/rust/Cargo.toml"
-    ]
 }
