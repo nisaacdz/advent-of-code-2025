@@ -39,7 +39,7 @@ fn solve(mut intervals: Vec<(u64, u64)>, ids: Vec<u64>) -> usize {
     }
 
     intervals.sort_unstable();
-    
+
     let mut txf_intervals = vec![intervals[0].0, intervals[0].1];
 
     for i in 0..intervals.len() {
