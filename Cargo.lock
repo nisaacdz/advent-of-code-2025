@@ -49,3 +49,11 @@ version = "0.1.0"
 [[package]]
 name = "advent-of-code-06B"
 version = "0.1.0"
+
+[[package]]
+name = "advent-of-code-07A"
+version = "0.1.0"
+
+[[package]]
+name = "advent-of-code-07B"
+version = "0.1.0"
