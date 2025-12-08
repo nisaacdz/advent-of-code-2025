@@ -1,4 +1,7 @@
-use std::{fs::File, io::{BufRead, BufReader, Result}};
+use std::{
+    fs::File,
+    io::{BufRead, BufReader, Result},
+};
 
 fn main() -> Result<()> {
     let file = File::open("../input.txt")?;
@@ -8,14 +11,21 @@ fn main() -> Result<()> {
     for line in reader.lines() {
         let line = line?;
         if let Some(prev) = &last_line {
-            let row = prev.split_whitespace().map(|s| s.trim().parse::<u32>().unwrap()).collect::<Vec<_>>();
+            let row = prev
+                .split_whitespace()
+                .map(|s| s.trim().parse::<u32>().unwrap())
+                .collect::<Vec<_>>();
             mat.push(row);
         }
 
         last_line = Some(line);
     }
 
-    let operations = last_line.unwrap().split_whitespace().map(|v| v.as_bytes()[0]).collect::<Vec<_>>();
+    let operations = last_line
+        .unwrap()
+        .split_whitespace()
+        .map(|v| v.as_bytes()[0])
+        .collect::<Vec<_>>();
 
     let result = solve(mat, operations);
     println!("Result: {}", result);

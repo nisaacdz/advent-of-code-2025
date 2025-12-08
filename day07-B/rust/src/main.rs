@@ -24,7 +24,7 @@ fn solve(mut mat: Vec<Vec<u8>>) -> u64 {
 
     let idx = mat[0].iter().position(|&c| c == b'S').unwrap();
     mat[0][idx] = b'|';
-    
+
     dp[n - 1].iter_mut().for_each(|v| *v = 1);
 
     for i in (0..(n - 1)).rev() {
