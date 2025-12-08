@@ -34,10 +34,10 @@ fn solve(mut mat: Vec<Vec<u8>>) -> u64 {
                 if mat[i - 1][j] == b'|' {
                     result += 1;
                     if j > 0 && mat[i][j - 1] == b'.' {
-                        mat[i][j - 1] = b'|'
+                        mat[i][j - 1] = b'|';
                     };
                     if i + 1 < mat[0].len() && mat[i][j + 1] == b'.' {
-                        mat[i][j + 1] = b'|'
+                        mat[i][j + 1] = b'|';
                     };
                 }
             }
