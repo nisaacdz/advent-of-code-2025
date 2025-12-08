@@ -4,7 +4,7 @@ use std::{
 };
 
 fn main() -> Result<()> {
-    let file = File::open("../input.txt")?;
+    let file = File::open("../input2.txt")?;
     let reader = BufReader::new(file);
     let mut mat = Vec::new();
     for line in reader.lines() {
@@ -27,7 +27,7 @@ fn solve(mut mat: Vec<Vec<u8>>) -> u64 {
     
     dp[n - 1].iter_mut().for_each(|v| *v = 1);
 
-    for i in (1..(n - 1)).rev() {
+    for i in (0..(n - 1)).rev() {
         for j in 0..m {
             if mat[i][j] == b'^' {
                 dp[i][j] += if j > 0 { dp[i + 1][j - 1] } else { 0 };
@@ -41,5 +41,5 @@ fn solve(mut mat: Vec<Vec<u8>>) -> u64 {
     //let mat = mat.into_iter().map(|v| String::from_utf8(v).unwrap()).collect::<Vec<_>>();
     //dp.iter().for_each(|r| println!("{:?}", r));
 
-    dp[1][idx]
+    dp[0][idx]
 }
