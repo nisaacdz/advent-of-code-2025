@@ -1,51 +1,106 @@
-use std::{
-    fs::File,
-    io::{BufRead, BufReader, Result},
+use glam::IVec3;
+use itertools::Itertools;
+use nom::{
+    IResult, Parser,
+    bytes::complete::tag,
+    character::complete::{self, line_ending},
+    multi::separated_list1,
 };
 
-fn main() -> Result<()> {
-    let file = File::open("../input.txt")?;
-    let reader = BufReader::new(file);
-    let mut mat = Vec::new();
-    for line in reader.lines() {
-        let line = line?;
-        mat.push(line.into_bytes());
-    }
+fn main() {
+    let input = include_str!("..\\..\\input.txt");
+    let result = process(input);
 
-    let result = solve(mat);
-    println!("Result: {}", result);
-
-    Ok(())
+    println!("Result is : {result}");
 }
 
-fn solve(mut mat: Vec<Vec<u8>>) -> u64 {
-    let mut result = 0;
+pub fn process(input: &str) -> usize {
+    let (_, positions) = parse(input).unwrap();
+    let output = groups(positions, 3, 1000);
+    output
+}
 
-    let idx = mat[0].iter().position(|&c| c == b'S').unwrap();
-    mat[0][idx] = b'|';
-
-    for i in 1..mat.len() {
-        for j in 0..mat[i].len() {
-            if mat[i][j] == b'.' {
-                if mat[i - 1][j] == b'|' {
-                    mat[i][j] = b'|';
+fn groups(
+    positions: Vec<IVec3>,
+    num_largest: usize,
+    num_pairs: usize,
+) -> usize {
+    let mut connections: Vec<Vec<IVec3>> = vec![];
+    for (a, b, _) in positions
+        .iter()
+        .tuple_combinations()
+        .map(|(a, b)| {
+            (a, b, a.as_vec3().distance(b.as_vec3()))
+        })
+        .sorted_by(|a, b| a.2.partial_cmp(&b.2).unwrap())
+        .take(num_pairs)
+    {
+        let matches = connections
+            .iter()
+            .positions(|cluster| {
+                let contains_a = cluster.contains(a);
+                let contains_b = cluster.contains(b);
+                contains_a || contains_b
+            })
+            .collect::<Vec<usize>>();
+        match matches.as_slice() {
+            [] => {
+                connections.push(vec![*a, *b]);
+            }
+            [index] => {
+                let cluster =
+                    connections.get_mut(*index).unwrap();
+                let contains_a = cluster.contains(a);
+                let contains_b = cluster.contains(b);
+                // cluster contains one of the junction boxes
+                match (contains_a, contains_b) {
+                    (true, true) => {
+                        // do nothing, both are already in the cluster
+                    }
+                    (true, false) => {
+                        cluster.push(*b);
+                    }
+                    (false, true) => {
+                        cluster.push(*a);
+                    }
+                    (false, false) => {
+                        panic!(
+                            "We just filtered for a truth, so this should never happen"
+                        );
+                    }
                 }
-            } else if mat[i][j] == b'^' {
-                if mat[i - 1][j] == b'|' {
-                    result += 1;
-                    if j > 0 && mat[i][j - 1] == b'.' {
-                        mat[i][j - 1] = b'|';
-                    };
-                    if i + 1 < mat[0].len() && mat[i][j + 1] == b'.' {
-                        mat[i][j + 1] = b'|';
-                    };
-                }
+            }
+            [index_a, index_b] => {
+                let a = connections
+                    .remove(*index_a.max(index_b));
+                let b = connections
+                    .remove(*index_a.min(index_b));
+                let new_cluster = a
+                    .into_iter()
+                    .chain(b.into_iter())
+                    .unique()
+                    .collect::<Vec<IVec3>>();
+                connections.push(new_cluster);
+            }
+            _ => {
+                panic!("");
             }
         }
     }
+    connections.sort_by(|a, b| b.len().cmp(&a.len()));
 
-    //let mat = mat.into_iter().map(|v| String::from_utf8(v).unwrap()).collect::<Vec<_>>();
-    //println!("{:#?}", mat);
+    connections
+        .iter()
+        .map(|v| v.len())
+        .take(num_largest)
+        .product()
+}
 
-    result
+fn parse(input: &str) -> IResult<&str, Vec<IVec3>> {
+    separated_list1(
+        line_ending,
+        separated_list1(tag(","), complete::i32)
+            .map(|v| IVec3::from_slice(&v)),
+    )
+    .parse(input)
 }
