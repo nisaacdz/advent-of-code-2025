@@ -79,6 +79,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "advent-of-code-09A"
+version = "0.1.0"
+dependencies = [
+ "itertools",
+]
+
+[[package]]
 name = "advent-of-code-template"
 version = "0.1.0"
 
