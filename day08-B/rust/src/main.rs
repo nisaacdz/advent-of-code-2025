@@ -42,7 +42,7 @@ fn groups(positions: Vec<IVec3>) -> i64 {
             [Some(index), None] => {
                 let _ = last.insert((*a, *b));
                 connections[index].push(*b);
-            },
+            }
             [None, Some(index)] => {
                 let _ = last.insert((*a, *b));
                 connections[index].push(*a);
