@@ -20,36 +20,25 @@ pub fn process(input: &str) -> usize {
     output
 }
 
-fn groups(
-    positions: Vec<IVec3>,
-    num_largest: usize,
-    num_pairs: usize,
-) -> usize {
+fn groups(positions: Vec<IVec3>, num_largest: usize, num_pairs: usize) -> usize {
     let mut connections: Vec<Vec<IVec3>> = vec![];
     for (a, b, _) in positions
         .iter()
         .tuple_combinations()
-        .map(|(a, b)| {
-            (a, b, a.as_vec3().distance(b.as_vec3()))
-        })
+        .map(|(a, b)| (a, b, a.as_vec3().distance(b.as_vec3())))
         .sorted_by(|a, b| a.2.partial_cmp(&b.2).unwrap())
         .take(num_pairs)
     {
         let matches = connections
             .iter()
-            .positions(|cluster| {
-                let contains_a = cluster.contains(a);
-                let contains_b = cluster.contains(b);
-                contains_a || contains_b
-            })
+            .positions(|cluster| cluster.contains(a) || cluster.contains(b))
             .collect::<Vec<usize>>();
         match matches.as_slice() {
             [] => {
                 connections.push(vec![*a, *b]);
             }
             [index] => {
-                let cluster =
-                    connections.get_mut(*index).unwrap();
+                let cluster = connections.get_mut(*index).unwrap();
                 let contains_a = cluster.contains(a);
                 let contains_b = cluster.contains(b);
                 // cluster contains one of the junction boxes
@@ -64,17 +53,13 @@ fn groups(
                         cluster.push(*a);
                     }
                     (false, false) => {
-                        panic!(
-                            "We just filtered for a truth, so this should never happen"
-                        );
+                        panic!("We just filtered for a truth, so this should never happen");
                     }
                 }
             }
             [index_a, index_b] => {
-                let a = connections
-                    .remove(*index_a.max(index_b));
-                let b = connections
-                    .remove(*index_a.min(index_b));
+                let a = connections.remove(*index_a.max(index_b));
+                let b = connections.remove(*index_a.min(index_b));
                 let new_cluster = a
                     .into_iter()
                     .chain(b.into_iter())
@@ -99,8 +84,7 @@ fn groups(
 fn parse(input: &str) -> IResult<&str, Vec<IVec3>> {
     separated_list1(
         line_ending,
-        separated_list1(tag(","), complete::i32)
-            .map(|v| IVec3::from_slice(&v)),
+        separated_list1(tag(","), complete::i32).map(|v| IVec3::from_slice(&v)),
     )
     .parse(input)
 }
