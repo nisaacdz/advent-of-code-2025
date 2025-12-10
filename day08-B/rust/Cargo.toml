@@ -4,3 +4,7 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+b_trees = "0.0.12"
+glam = "0.30.9"
+itertools = "0.14.0"
+nom = "8.0.0"
